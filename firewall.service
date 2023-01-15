@@ -1,0 +1,13 @@
+[Unit]
+Description=IPtables Packet Filtering Firewall Framework
+DefaultDependencies=no
+After=systemd-sysctl.service
+Before=sysinit.target
+[Service]
+Type=oneshot
+ExecStart=/etc/firewall/firewall.sh
+ExecReload=/sbin/iptables-restore /etc/firewall/firewall.rules
+ExecStop=/etc/firewall/firewall.stop
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target
