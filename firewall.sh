@@ -4,8 +4,8 @@
 #Set Variables.
 iptables=/sbin/iptables
 iptablessave=/sbin/iptables-save
-uplink="eth0"
-internal="127.0.0.1" #Lan Address - Set to Network Adapter Address.
+uplink="eth0" # Set to NIC Adapter name
+internal="127.0.0.1" # Lan Address - Set to Network Adapter Address.
 external="192.168.0.100" # Public Address - Set to the Public Internet IP Address.
 
 #iptables rules.
