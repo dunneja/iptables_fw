@@ -5,12 +5,11 @@
 iptables=/sbin/iptables
 iptablessave=/sbin/iptables-save
 uplink="eth0"
-ixion="10.0.0.4"
-external="140.228.66.185"
-interfaces="lo eth0"
+internal="127.0.0.1"
+external="192.168.0.100"
 
 #iptables rules.
-echo -e "\e[32m*\e[0m Ixion.nologin.co.uk IPTABLES Firewall Script:"
+echo -e "\e[32m*\e[0m IPTABLES Firewall Script:"
 echo -e "\e[32m*\e[0m Flushing all chains, rules and setting all policies to ACCEPT..."
 $iptables -F
 $iptables -t nat -F
@@ -43,17 +42,10 @@ $iptables -A allow-http-traffic -p tcp -i $uplink --dport 80 -m tcp -j ACCEPT
 echo -e "\e[32m*\e[0m Creating incoming https traffic chain..."
 $iptables -N allow-https-traffic
 $iptables -F allow-https-traffic
-$iptables -I allow-https-traffic 1 -p tcp -i $uplink --dport 443 -m state --state NEW -m recent --update --seconds 10
-$iptables -I allow-https-traffic 2 -p tcp -i $uplink --dport 443 -m state --state NEW -m recent --update --seconds 10
+$iptables -I allow-https-traffic 1 -p tcp -i $uplink --dport 443 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j LOG --log-prefix "IPTABLES:BLOCKED-CONN: "
+$iptables -I allow-https-traffic 2 -p tcp -i $uplink --dport 443 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j DROP
 $iptables -A allow-https-traffic -p tcp -i $uplink --dport 443 -m tcp -j LOG --log-prefix "IPTABLES:ALLOWED-HTTPS: "
 $iptables -A allow-https-traffic -p tcp -i $uplink --dport 443 -m tcp -j ACCEPT
-echo -e "\e[32m*\e[0m Creating incoming znc/bnc traffic chain..."
-$iptables -N allow-znc-traffic
-$iptables -F allow-znc-traffic
-$iptables -I allow-znc-traffic 1 -p tcp -i $uplink --dport 6697 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j LOG --log-prefix "IPTABLES:BLOCKED-CONN: "
-$iptables -I allow-znc-traffic 2 -p tcp -i $uplink --dport 6697 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j DROP
-$iptables -A allow-znc-traffic -p tcp -i $uplink -s $external --dport 6697 -j LOG --log-prefix "IPTABLES:ALLOWED-ZNC: "
-$iptables -A allow-znc-traffic -p tcp -i $uplink -s $external --dport 6697 -j ACCEPT
 echo -e "\e[32m*\e[0m Creating blocked connections chain and setting drop & log rules..."
 $iptables -N blocked-connections
 $iptables -F blocked-connections
@@ -64,7 +56,6 @@ $iptables -A INPUT -j allowed-connections
 $iptables -A INPUT -j allow-ssh-traffic
 $iptables -A INPUT -j allow-http-traffic
 $iptables -A INPUT -j allow-https-traffic
-$iptables -A INPUT -j allow-znc-traffic
 $iptables -A INPUT -j blocked-connections
 echo -e "\e[32m*\e[0m Setting DROP rules & log conditions for INPUT chain..."
 $iptables -P INPUT DROP
