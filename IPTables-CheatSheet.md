@@ -162,3 +162,5 @@ You can also delete base don the rule number:
 ```
 iptables -D INPUT 4
 ```
+
+Credit: https://gist.github.com/davydany/0ad377f6de3c70056d2bd0f1549e1017
