@@ -5,7 +5,7 @@
 iptables=/sbin/iptables
 iptablessave=/sbin/iptables-save
 uplink="eth0" # Set to NIC Adapter name
-internal="127.0.0.1" # Lan Address - Set to Network Adapter Address.
+internal="192.168.1.10" # Lan Address - Set to Network Adapter Address.
 
 #iptables rules.
 echo -e "\e[32m*\e[0m IPTABLES Firewall Script:"
