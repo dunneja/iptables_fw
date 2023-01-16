@@ -1,5 +1,5 @@
 #!/bin/sh
-echo -e "\e[32m*\e[0m Ixion.nologin.co.uk IPTABLES Firewall Script:"
+echo -e "\e[32m*\e[0m IPTABLES Firewall Script:"
 echo -e "\e[32m*\e[0m Flushing all chains, rules and setting all policies to ACCEPT..."
 iptables -F
 iptables -X
@@ -10,3 +10,4 @@ iptables -t mangle -X
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
+echo -e "\e[32m*\e[0m IPTABLES Firewall Stopped."
