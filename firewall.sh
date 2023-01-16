@@ -5,8 +5,8 @@
 iptables=/sbin/iptables
 iptablessave=/sbin/iptables-save
 uplink="eth0"
-internal="127.0.0.1"
-external="192.168.0.100"
+internal="127.0.0.1" #Lan Address - Set to Network Adapter Address.
+external="192.168.0.100" # Public Address - Set to the Public Internet IP Address.
 
 #iptables rules.
 echo -e "\e[32m*\e[0m IPTABLES Firewall Script:"
