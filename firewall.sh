@@ -6,7 +6,6 @@ iptables=/sbin/iptables
 iptablessave=/sbin/iptables-save
 uplink="eth0" # Set to NIC Adapter name
 internal="127.0.0.1" # Lan Address - Set to Network Adapter Address.
-external="192.168.0.100" # Public Address - Set to the Public Internet IP Address.
 
 #iptables rules.
 echo -e "\e[32m*\e[0m IPTABLES Firewall Script:"
@@ -31,21 +30,21 @@ $iptables -I allow-ssh-traffic 2 -p tcp -i $uplink -m tcp --dport 22 -m recent -
 $iptables -I allow-ssh-traffic 3 -p tcp -i $uplink -m tcp --dport 22 -m recent --rcheck --seconds 60 --hitcount 3 --rttl --name SSH --rsource -j LOG --log-prefix "IPTABLES:BLOCKED-CONN: "
 $iptables -I allow-ssh-traffic 4 -p tcp -i $uplink -m tcp --dport 22 -m recent --update --seconds 60 --hitcount 3 --rttl --name SSH --rsource -j REJECT --reject-with tcp-reset
 $iptables -A allow-ssh-traffic -p tcp -i $uplink -m tcp --dport 22 -j LOG --log-prefix "IPTABLES:ALLOWED-SSH: "
-$iptables -A allow-ssh-traffic -p tcp -i $uplink -m tcp --dport 22 -j ACCEPT
+$iptables -A allow-ssh-traffic -p tcp -i $uplink -m tcp --dport 22 -d $internal -j ACCEPT
 echo -e "\e[32m*\e[0m Creating incoming http traffic chain..."
 $iptables -N allow-http-traffic
 $iptables -F allow-http-traffic
 $iptables -I allow-http-traffic 1 -p tcp -i $uplink --dport 80 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j LOG --log-prefix "IPTABLES:BLOCKED-CONN: "
 $iptables -I allow-http-traffic 2 -p tcp -i $uplink --dport 80 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j DROP
 $iptables -A allow-http-traffic -p tcp -i $uplink --dport 80 -m tcp -j LOG --log-prefix "IPTABLES:ALLOWED-HTTP: "
-$iptables -A allow-http-traffic -p tcp -i $uplink --dport 80 -m tcp -j ACCEPT
+$iptables -A allow-http-traffic -p tcp -i $uplink --dport 80 -m tcp -d $internal -j ACCEPT
 echo -e "\e[32m*\e[0m Creating incoming https traffic chain..."
 $iptables -N allow-https-traffic
 $iptables -F allow-https-traffic
 $iptables -I allow-https-traffic 1 -p tcp -i $uplink --dport 443 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j LOG --log-prefix "IPTABLES:BLOCKED-CONN: "
 $iptables -I allow-https-traffic 2 -p tcp -i $uplink --dport 443 -m state --state NEW -m recent --update --seconds 10 --hitcount 5 -j DROP
 $iptables -A allow-https-traffic -p tcp -i $uplink --dport 443 -m tcp -j LOG --log-prefix "IPTABLES:ALLOWED-HTTPS: "
-$iptables -A allow-https-traffic -p tcp -i $uplink --dport 443 -m tcp -j ACCEPT
+$iptables -A allow-https-traffic -p tcp -i $uplink --dport 443 -m tcp -d $internal -j ACCEPT
 echo -e "\e[32m*\e[0m Creating blocked connections chain and setting drop & log rules..."
 $iptables -N blocked-connections
 $iptables -F blocked-connections
